@@ -1,0 +1,114 @@
+﻿@model TranslationRequestVM
+@using HtmlAgilityPack;
+
+<form enctype="multipart/form-data">
+    <div class="border p-3 ">
+        <div class="row">
+            <div class="col-8">
+                <div class="form-group row">
+                    <div class="col-4 pl-5 pt-2">
+                        <h3 class="text-info  ">Text</h3>
+                    </div>
+                    <div class="col-8">
+                        <textarea id="input" asp-for="@Model.TranslationModel.TextToTranslate" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4 pl-5 pt-2">
+                        <h3 class="text-info  ">Language</h3>
+                    </div>
+                    <div class="col-8">
+                        <select id="selectok" asp-for="@Model.AvaiableLanguages" asp-items="@Model.AvaiableLanguages" class="form-control overflow-auto" required >
+                        </select>
+                    </div>
+                </div>
+                <br />
+                <div class="form-group row">
+                    <div class="col-4 pl-5 pt-2">
+                        <h3 class="text-info">Translation</h3>
+                    </div>
+                    <div class="col-8">
+                        <div class=" border pt-4 overflow-auto " style="height:150px" id="translation"> </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col">
+                        <input class="btn btn-primary w-50 float-right mx-2" type="button" onclick="return getTranslation()" value="Translate" />
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-success w-25 mx-2"> <i class="fas fa-sign-out-alt"></i>  Back </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    <script>
+        function getTranslation(e) {
+            let inputText = ($("#input").val());
+            let selectValue = ($("#selectok option:selected").text());
+
+            if (e) e.preventDefault();
+            $.ajax({
+                type: 'GET',
+                url: 'https://api.funtranslations.com/translate/' + selectValue + '.json?text=' + inputText,
+                async: false,
+                beforeSend: (xhr) => {
+                    if (xhr && xhr.overrideMimeType) {
+                        xhr.overrideMimeType('application/json;charset=utf-8');
+                    }
+                },
+                dataType: 'json',
+                success: (data) => {
+                    $("#translation").text("");
+                    $("#translation").text(data.contents.translated);
+
+                    ////////START////////AJAX in AJAX/////SUCCESS LOGGER///
+                     $.ajax
+                         ({
+                             type: "POST",
+                             ContentType: "application/json; charset=utf-8",
+                             url: '@Url.Action("SuccessfulAjaxPostLogger")',
+                             async: false,
+                             // translationDetails
+                             data: data,
+                    success: (function (data) {
+                    }),
+                    error: (function () {
+                    })
+                });
+                    ////////END////////AJAX in AJAX////////
+
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    let errorInfo = xhr.responseText;
+                    $("#translation").text("");
+                    $("#translation").text("Error:" + xhr.responseText + "code:" + thrownError.contents);
+                    alert("Language not chosen or request limit exceeded - check logs for more details" + xhr.responseText);
+
+                    ////////START////////AJAX in AJAX////ERROR LOGGER////
+                     $.ajax
+                         ({
+                             type: "POST",
+                             ContentType: "application/json; charset=utf-8",
+                             url: '@Url.Action("FailedAjaxPostLogger")',
+                             async: false,
+                             data: { data: errorInfo},
+                    success: (function (data) {
+                    }),
+                    error: (function () {
+                    })
+                });
+                    ////////END////////AJAX in AJAX////////
+
+                }
+            });
+        }
+    </script>
+}
+
+
+
+
+
+

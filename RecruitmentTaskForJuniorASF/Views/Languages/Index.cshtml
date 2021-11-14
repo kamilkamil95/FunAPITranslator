@@ -1,0 +1,46 @@
+﻿@model IEnumerable<LanguageModel>
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary"> List of Available Languages</h2>
+        </div>
+        <div class="col-6 text-right">
+            <a asp-controller="Languages" asp-action="Create" class="btn btn-primary">
+                Add New Language
+            </a>
+        </div>
+    </div>
+    <br /><br />
+    @if (Model.Count() > 0)
+    {
+        <table class="table table-bordered table-striped" style="width:100%">
+            <thead>
+                <tr>
+                  
+                    <th>
+                        Language
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var obj in Model)
+                {
+                    <tr>
+                        <td width="60%">@obj.Language</td>
+                        <td class="text-center">
+                            <div class="w-75 btn-group" role="group">
+                                <a asp-controller="Languages" asp-route-Id="@obj.Id" asp-action="Edit" class="btn btn-primary mx-2">Edit</a>
+                                <a asp-controller="Languages" asp-route-Id="@obj.Id" asp-action="Delete" class="btn btn-danger mx-2">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No Available Languages.</p>
+    }
+</div>
