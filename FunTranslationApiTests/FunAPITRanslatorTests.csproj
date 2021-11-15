@@ -13,7 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RecruitmentTaskForJuniorASF\FunAPITranslator.csproj" />
+    <ProjectReference Include="..\FunTranslationApiTests\FunAPITRanslatorTests.csproj" />
+    <ProjectReference Include="..\FunTranslationApi\FunAPITranslator.csproj" />
   </ItemGroup>
 
 </Project>
